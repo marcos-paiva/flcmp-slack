@@ -1,5 +1,22 @@
-const slackBot = require('slackbots');
+const SlackBot = require('slackbots');
 const axios = require('axios');
-const dotEnv = require('dotenv');
+const dotEnv = require('dotenv').config();
 
-dotEnv.config();
+
+
+const bot = new SlackBot({
+    token: `${process.env.BOT_TOKEN}`,
+    name: 'falacampeao'
+});
+
+bot.on('start', () => {
+    const params = {
+        icon_emoji: ':robot_face:'
+    }
+
+    bot.postMessageToChannel(
+        'integração',
+        '',
+        params
+    );
+})
