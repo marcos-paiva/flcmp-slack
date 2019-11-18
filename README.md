@@ -1,2 +1,2 @@
 # flcmp-slack
-Slack integration
+Integração slack para o app Fala Campeão: https://github.com/marcos-paiva/fala-campeao-server
