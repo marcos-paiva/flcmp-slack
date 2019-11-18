@@ -1,0 +1,2 @@
+# flcmp-slack
+Slack integration
