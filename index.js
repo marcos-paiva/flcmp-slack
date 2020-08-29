@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser')
 const cors = require('cors');
-const cmdParser = require('./cmdParser');
+const getPhrases = require('./src/getPhrases')
 const app = express();
 
 app.use(cors());
@@ -9,8 +9,28 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/', (req, res) => {
-    const reqres = cmdParser(req.body);
-    res.send(reqres);
+    var responseObj = {};
+
+    if (req.body.text === 'rand') {
+
+        getPhrases.get().then(function(response){
+            responseObj = {
+                response_type: req.body.channel_id,
+                text: response.data
+            }
+        }).catch(function (error) {
+            console.log(error);
+        })
+
+    } else {
+
+        responseObj = {
+            response_type: "ephemeral",
+            text: 'Command not found'
+        }
+    }
+
+    res.json(responseObj);
 });
 
 let port = process.env.PORT || 3001;
