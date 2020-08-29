@@ -1,61 +1,37 @@
-const SlackBot = require('slackbots');
-const axios = require('axios');
-const dotEnv = require('dotenv').config();
+const express = require('express');
+const bodyParser = require('body-parser')
+const cors = require('cors');
+const getPhrases = require('./src/getPhrases')
+const app = express();
 
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
+app.post('/', (req, res) => {
+    var responseObj = {};
 
-const bot = new SlackBot({
-    token: `${process.env.BOT_TOKEN}`,
-    name: 'falacampeao'
-});
+    if (req.body.text === 'rand') {
 
-bot.on('start', () => {
-    const params = {
-        icon_emoji: ':robot_face:'
-    }
+        getPhrases.get().then(function(response){
+            responseObj = {
+                response_type: req.body.channel_id,
+                text: response.data
+            }
+        }).catch(function (error) {
+            console.log(error);
+        })
 
-    bot.postMessageToChannel(
-        'integração',
-        '',
-        params
-    );
-
-})
-
-bot.on('error', (error) => {
-    console.log(error)
-});
-
-bot.on('message', (data) => {
-    if(data.type !== 'message') {
-        return;
-    }
-    handleMessage(data.text);
-})
-
-function handleMessage(message) {
-    if (message.includes(' go')) {
-        randomJoke();
     } else {
-        getHelp();
-    }
-}
 
-const api = axios.create({
-    baseURL: 'http://localhost:3001/api/phrases'
+        responseObj = {
+            response_type: "ephemeral",
+            text: 'Command not found'
+        }
+    }
+
+    res.json(responseObj);
 });
 
-async function randomJoke() {
-    try {
-        const res = await api.get();
-        bot.postMessageToChannel('integração', res.data);
-        console.info(res.data);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function getHelp() {
-
-}
-
+let port = process.env.PORT || 3001;
+app.listen(port);
